@@ -2,6 +2,8 @@ const express = require("express")
 const taskRoutes = require("./routes/taskRoutes")
 const mongoose = require("mongoose")
 require("dotenv").config()
+const {handleError} = require("./middleware/errorHandler")
+const {notFound} = require("./middleware/taskValidator")
 const app = express()
 const PORT = 5000
 app.use(express.json())
@@ -16,6 +18,8 @@ app.use((req,res,next)=>{
 })
 
 app.use("/api/tasks",taskRoutes)
+app.use(notFound)
+app.use(handleError)
 
 app.listen(PORT,()=>{
     console.log(`Server is running successfully on http://localhost:${PORT}`)
