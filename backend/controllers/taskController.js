@@ -2,39 +2,49 @@ const Task = require("../models/Task");
 const asyncWrapper = require("../middleware/asyncWrapper"); // Removed { } if you used module.exports = asyncWrapper
 
 const showTasks = asyncWrapper(async (req, res) => {
-    const allTasks = await Task.find({});
+    const allTasks = await Task.find({createdBy: req.user.userId});
     res.status(200).json(allTasks);
 });
 
 const createTask = asyncWrapper(async (req, res) => {
+    req.body.createdBy = req.user.userId
+
     const task = await Task.create(req.body);
     res.status(201).json(task);
 });
 
 const getTaskById = asyncWrapper(async (req, res) => {
-    const { id } = req.params;
-    const task = await Task.findById(id);
+    const { id : taskId} = req.params;
+    const {userId} = req.user
+    const task = await Task.findOne({_id : taskId, createdBy : userId});
     if (!task) {
-        return res.status(404).json({ message: "Id not found" });
+        return res.status(404).json({ message: "Task not found" });
     }
     res.status(200).json(task);
 });
 
 const updateTask = asyncWrapper(async (req, res) => {
-    const updatedTask = await Task.findByIdAndUpdate(req.params.id, req.body, {
+    const {id : taskId} = req.params
+    const {userId} = req.user
+    const updatedTask = await Task.findOneAndUpdate({_id : taskId, createdBy : userId}, req.body, {
         new: true,
-        runValidators: true,
+        runValidators: true
     });
     if (!updatedTask) {
-        return res.status(404).json({ message: "Id not found" });
+        return res.status(404).json({ message: "Task not found" });
     }
     res.status(200).json(updatedTask);
 });
 
 const deleteTask = asyncWrapper(async (req, res) => {
-    const deleted = await Task.findByIdAndDelete(req.params.id);
+    const {id : taskId} = req.params
+    const {userId} = req.user
+    const deleted = await Task.findOneAndDelete({
+        _id : taskId,
+        createdBy : userId
+    });
     if (!deleted) {
-        return res.status(404).json({ message: "Id not found" });
+        return res.status(404).json({ message: "Task not found" });
     }
     res.status(200).json({ message: "Task deleted" });
 });

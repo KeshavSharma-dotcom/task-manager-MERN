@@ -16,14 +16,16 @@ const User = mongoose.Schema({
         required : true
     },
     isVerified :{
-        typr: Boolean,
+        type: Boolean,
         default : false
     },
     otp : String
 })
 
 User.pre('save',async function(){
-    const salt = await bcrypt.getSalt(process.env.SALT_ROUNDS)
+    if(!this.isModified('password')){return} 
+
+    const salt = await bcrypt.genSalt(Number(process.env.SALT_ROUNDS || 10))
     this.password = await bcrypt.hash(this.password , salt)
 })
 

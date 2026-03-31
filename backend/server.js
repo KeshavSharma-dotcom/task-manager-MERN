@@ -4,8 +4,9 @@ const authRoute = require("./routes/authRoutes")
 const mongoose = require("mongoose")
 const cors = require("cors")
 require("dotenv").config()
-const {handleError} = require("./middleware/errorHandler")
-const {notFound} = require("./middleware/taskValidator")
+const handleError = require("./middleware/errorHandler")
+const notFound = require("./middleware/notFound")
+const authMiddleware = require("./middleware/authentication")
 const app = express()
 const PORT = 5000
 
