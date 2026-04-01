@@ -6,16 +6,15 @@ const sendEmail = async ({to , subject , html}) =>{
         auth : {
             user : process.env.EMAIL_USER,
             pass: process.env.EMAIL_PASSWORD
-        }
+        },
     })
 
-    const mainOptions = {
-        from : `Task Manager Support ${process.env.EMAIL_USER}`,
+    const mailOptions = {
+        from : `"Task Manager Support" <${process.env.EMAIL_USER}>`,
         to,
         subject,
         html
     }
-    return transporter.sendMail(mainOptions
-    )
+    return transporter.sendMail(mailOptions)
 }
 module.exports = sendEmail

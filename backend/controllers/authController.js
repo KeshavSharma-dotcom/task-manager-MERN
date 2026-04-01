@@ -19,16 +19,18 @@ const registerUser = asyncWrapper(async (req,res)=>{
         password : password,
         otp : otp
     })
+    console.log(user)
     try{
         await sendEmail({
-            to : user.email,
+            to : email,
             subject : `Verify your account`,
             html : `<h1>Welcome</h1>
                    <p>Your code : <b>${otp}</b> </p>`
         })
         res.status(201).json({message:`OTP sent to ${user.email}`})
     }catch(err){
-        res.status(500).json({message:"failed to send email, try different email."})
+        console.log("Nodemailer error : ",err)
+        res.status(500).json({message:"failed to send email, try different email." ,err: err.message})
     }
 
 })

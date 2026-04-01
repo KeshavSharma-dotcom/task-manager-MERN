@@ -4,7 +4,7 @@ const authMiddleware =asyncWrapper( async (req,res,next) => {
     const header = req.headers.authorization
 
     if(!header || !header.startsWith('Bearer ')){
-        res.status(401).json({message : "No token provided ,Login please!"})
+        return res.status(401).json({message : "No token provided ,Login please!"})
     }
 
     const token = header.split(' ')[1]
