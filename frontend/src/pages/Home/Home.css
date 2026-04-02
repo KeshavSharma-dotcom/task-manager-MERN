@@ -1,0 +1,13 @@
+.homeContainer{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    text-align: center;
+}
+
+.coHead1 ,.coHead2{
+    font-size: 60px;
+}
+.coHead2{
+    color: var(--subtext);  
+}

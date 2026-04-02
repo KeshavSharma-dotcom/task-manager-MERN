@@ -1,0 +1,30 @@
+.navContainer{
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+}
+
+.Nvbr {
+    background: rgba(15, 23, 42, 0.7);
+    backdrop-filter: blur(8px);
+
+    border-bottom: 1px solid var(--border);
+}
+
+.navButtonContainer{
+    display: flex;
+    gap: 20px;
+    margin-right: 20px; 
+
+}
+
+.navButtons{
+    background: transparent;
+    border: none;
+    padding: 8px 12px;
+    transition: 0.2s;
+}
+.navButtons:hover{
+    scale: 1.15;
+}
