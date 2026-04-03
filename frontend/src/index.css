@@ -62,3 +62,6 @@ button:hover{
   transform: translateY(-1px);
 }
 
+a{
+  color: #6366f1;
+}

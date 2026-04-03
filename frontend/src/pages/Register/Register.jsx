@@ -53,6 +53,7 @@ const Register = () =>{
         placeholder="Password : "
         required
         />
+        <a href="/login">already have an account</a>
         <button type="submit">
             Submit
         </button>
