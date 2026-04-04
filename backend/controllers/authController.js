@@ -19,7 +19,6 @@ const registerUser = asyncWrapper(async (req,res)=>{
         password : password,
         otp : otp
     })
-    console.log(user)
     try{
         await sendEmail({
             to : email,
@@ -74,4 +73,45 @@ const verifyUser = asyncWrapper(async (req,res) =>{
 
     res.status(200).json({message:"Login successfull", token : token})
 })
-module.exports = {registerUser, verifyOtp, verifyUser}
+
+const forgotPassword = asyncWrapper( async (req, res)=>{
+    const {email} = req.body
+    if(!email){
+        return res.status(400).json({message:"Email are required"})
+    }
+    const user = await User.findOne({email})
+    if(!user){
+        return res.status(404).json({message:"User not found"})
+    }
+    const otp = Math.floor(100000 + Math.random() * 900000).toString()
+    user.otp = otp 
+    try{
+        await sendEmail({
+            to : email,
+            subject : `Change user password`,
+            html : `<h1>Change your password</h1>
+            <h2>Here is your otp for changing password : </h2>
+            <p><b>${otp}</b></p>`
+        })
+    }catch(err){
+        res.status(403).json({message:"Failed to send otp"})
+    }
+    await user.save()
+    res.status(200).json({message:`OTP sent to ${email}`})
+})
+
+const newPassword =asyncWrapper( async (req,res)=>{
+    const {email, password} = req.body 
+    if(!email || !password){
+        return res.status(400).json({message:"Password is required"})
+    }
+    const user = await User.findOne({email})
+    if(!user){
+        return res.status(404).json({message:"User not found, Register first!"})
+    }
+    
+    user.password = password
+    await user.save()
+    res.status(201).json({message:"Password changed successfully"})
+})
+module.exports = {registerUser, verifyOtp, verifyUser , forgotPassword, newPassword}

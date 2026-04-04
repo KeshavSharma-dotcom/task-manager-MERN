@@ -8,7 +8,7 @@ const showTasks = asyncWrapper(async (req, res) => {
 
 const createTask = asyncWrapper(async (req, res) => {
     req.body.createdBy = req.user.userId
-
+    
     const task = await Task.create(req.body);
     res.status(201).json(task);
 });

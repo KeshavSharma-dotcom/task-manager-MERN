@@ -10,7 +10,14 @@ const TaskSchema = mongoose.Schema({
         type : Boolean,
         default : false
     },
-    
+    currentTime : {
+        type : Date,
+
+    },
+    deadLine : {
+        type : Date,
+        
+    },
     createdBy :{
         type : mongoose.Types.ObjectId,
         ref : "User",

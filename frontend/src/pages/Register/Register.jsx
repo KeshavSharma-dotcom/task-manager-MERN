@@ -14,6 +14,11 @@ const Register = () =>{
     }
     const handleSubmit = async (e)=>{
         e.preventDefault();
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+        if (!emailRegex.test(formData.email)) {
+            return alert("Please enter a valid email address!");
+        }
         try{
             const response = await axios.post("http://localhost:5000/api/auth/register",formData)
             alert(response.data.message)
@@ -23,7 +28,6 @@ const Register = () =>{
         }
     }
     return (
-
         <form onSubmit={handleSubmit}>
         <div className="formContainer">
         <label htmlFor="name" >Name</label>

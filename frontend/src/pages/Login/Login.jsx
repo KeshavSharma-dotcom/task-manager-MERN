@@ -32,6 +32,7 @@ const Login = ()=>{
                 <input name="password" onChange={handleChange} value={loginData.password} placeholder="Password: "/>
                 <a href="/register">Don't have an account!</a>
                 <button type="submit">Submit</button>
+                <a href="/forgot">Forgot Password?</a>
             </div>
         </form>
     )

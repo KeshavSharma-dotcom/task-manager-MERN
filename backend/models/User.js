@@ -10,6 +10,7 @@ const User = mongoose.Schema({
         type : String,
         unique : true,
         required : true,
+        match : [/^[^\s@]+@[^\s@]+\.[^\s@]+$/,"Enter a valid email"]
     },
     password:{
         type : String,
