@@ -167,9 +167,23 @@ const Tasks = ()=>{
                                 <h2 className={t.isCompleted ? "strikethrough" : ""}>
                                     {t.taskName}
                                 </h2>
-                                <p>
-                                    {t.createdAt ? new Date(t.createdAt).toLocaleDateString() : "No Date"} - 
-                                    {t.createdAt ? new Date(t.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : ""}
+                                <p className="task-date">
+                                    {t.createdAt ? (
+                                        <>
+                                            <span className="calendar-icon">📅</span> 
+                                            {new Date(t.createdAt).toLocaleDateString('en-GB', {
+                                                day: '2-digit',
+                                                month: 'short',
+                                                year: 'numeric'
+                                            })}
+                                            <span className="time-divider"> | </span>
+                                            {new Date(t.createdAt).toLocaleTimeString([], { 
+                                                hour: '2-digit', 
+                                                minute: '2-digit',
+                                                hour12: true 
+                                            })}
+                                        </>
+                                    ) : "Pending..."}
                                 </p>
                             </div>
                             {t.isCompleted === true ? (
