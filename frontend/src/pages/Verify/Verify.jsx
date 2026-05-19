@@ -1,43 +1,57 @@
-import axios from "axios"
-import {useState} from "react"
-import {useLocation,useNavigate} from "react-router-dom"
-import "./Verify.css"
-const Verify = () =>{
+import { useState } from "react"
+import { useLocation, useNavigate } from "react-router-dom"
+import toast from "react-hot-toast"
+import "../../styles/Auth.css"
+
+const Verify = () => {
     const location = useLocation()
     const emailRegistered = location.state?.email || ""
-    const [verifyData, setVerifyData] = useState({
-        email : emailRegistered,
-        otp : ""
-    })
-
+    const [otp, setOtp] = useState("")
     const navigate = useNavigate()
-    const handleVerify = async (e)=>{
+
+    const handleVerify = async (e) => {
         e.preventDefault();
-        try{
-            const response = await axios.post("http://localhost:5000/api/auth/verify",verifyData)
-            alert(response.data.message)
+        try {
+            const response = await fetch("http://localhost:5000/api/auth/verify", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ email: emailRegistered, otp })
+            });
+            const data = await response.json();
+            if (!response.ok) throw new Error(data.message || "Verification failed");
+
+            toast.success(data.message || "Account verified!")
             navigate('/login')
-        }catch(err){
-            alert(err.response.data.message)
+        } catch (err) {
+            toast.error(err.message)
         }
     }
-    return (
 
-        <form onSubmit={handleVerify}>
-        <div className="formContainer">
-        <label htmlFor="otp" >Enter OTP</label>
-        <input 
-        type="number"
-        value={verifyData.otp}
-        onChange={(e)=>setVerifyData({...verifyData,otp : e.target.value})}
-        placeholder="Enter 6 digit passcode : "
-        required
-        />
-        <button type="submit">
-            Verify
-        </button>
+    return (
+        <div className="auth-page">
+            <div className="auth-card">
+                <h2>Verify Email</h2>
+                <p>We've sent a 6-digit code to <b>{emailRegistered}</b></p>
+                <form onSubmit={handleVerify}>
+                    <div className="form-group">
+                        <label>OTP Code</label>
+                        <input 
+                            type="text" 
+                            value={otp} 
+                            onChange={(e) => setOtp(e.target.value)} 
+                            placeholder="000000" 
+                            maxLength={6}
+                            required 
+                            style={{ textAlign: 'center', fontSize: '1.5rem', letterSpacing: '8px' }}
+                        />
+                    </div>
+                    <button type="submit" className="auth-btn">Verify Account</button>
+                </form>
+                <div className="auth-footer">
+                    Didn't receive the code? <button onClick={() => window.location.reload()} style={{ background: 'none', border: 'none', color: 'var(--primary)', fontWeight: 600, cursor: 'pointer' }}>Resend</button>
+                </div>
+            </div>
         </div>
-        </form>
     )
 }
 

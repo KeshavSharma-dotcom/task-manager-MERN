@@ -1,31 +1,52 @@
-import axios from "axios";
 import { useState } from "react"
-import { useNavigate } from "react-router-dom";
-import "./Forgot.css"
-const Forgot = ()=>{
+import { useNavigate, Link } from "react-router-dom";
+import toast from "react-hot-toast"
+import "../../styles/Auth.css"
+
+const Forgot = () => {
     const navigate = useNavigate()
-    const [email,setEmail] = useState("")
-    const handleSend = async (e)=>{
+    const [email, setEmail] = useState("")
+
+    const handleSend = async (e) => {
         e.preventDefault()
         const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
         if (!emailRegex.test(email)) {
-            return alert("Please enter a valid email address!");
+            return toast.error("Please enter a valid email address!");
         }
-        try{
-            const response = await axios.post("http://localhost:5000/api/auth/forgot-password",{email})
-            alert(response.data.message)
-            navigate("/reset",{state : {email : email}})
-        }catch(err){
-            alert(err.response?.data?.message)
+        try {
+            const response = await fetch("http://localhost:5000/api/auth/forgot-password", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ email })
+            });
+            const data = await response.json();
+            if (!response.ok) throw new Error(data.message || "Failed to send OTP");
+
+            toast.success(data.message || "OTP sent to your email")
+            navigate("/reset", { state: { email: email } })
+        } catch (err) {
+            toast.error(err.message)
         }
     }
-    return(
-        <form onSubmit={handleSend}>
-        <div className="formContainer">
-            <input type="email" onChange={(e)=>{setEmail(e.target.value)}} placeholder="Enter email: " />
-            <button type="submit">Send OTP</button>
+
+    return (
+        <div className="auth-page">
+            <div className="auth-card">
+                <h2>Forgot Password?</h2>
+                <p>Enter your email and we'll send you an OTP to reset your password.</p>
+                <form onSubmit={handleSend}>
+                    <div className="form-group">
+                        <label>Email Address</label>
+                        <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="name@company.com" required />
+                    </div>
+                    <button type="submit" className="auth-btn">Send Reset OTP</button>
+                </form>
+                <div className="auth-footer">
+                    Remembered your password? <Link to="/login">Back to Login</Link>
+                </div>
+            </div>
         </div>
-        </form>
     )
 }
+
 export default Forgot

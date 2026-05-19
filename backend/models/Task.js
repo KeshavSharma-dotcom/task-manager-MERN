@@ -12,7 +12,7 @@ const TaskSchema = mongoose.Schema({
     },
     currentTime : {
         type : Date,
-
+        default: Date.now
     },
     deadLine : {
         type : Date,

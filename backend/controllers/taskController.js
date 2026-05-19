@@ -1,52 +1,49 @@
-const Task = require("../models/Task");
-const asyncWrapper = require("../middleware/asyncWrapper"); // Removed { } if you used module.exports = asyncWrapper
+const asyncWrapper = require("../middleware/asyncWrapper");
+const taskService = require("../services/taskService");
+const aiService = require("../services/aiService");
 
 const showTasks = asyncWrapper(async (req, res) => {
-    const allTasks = await Task.find({createdBy: req.user.userId});
+    const allTasks = await taskService.getAllTasks(req.user.userId);
     res.status(200).json(allTasks);
 });
 
 const createTask = asyncWrapper(async (req, res) => {
-    req.body.createdBy = req.user.userId
-    
-    const task = await Task.create(req.body);
+    const task = await taskService.createTask(req.body, req.user.userId);
     res.status(201).json(task);
 });
 
 const getTaskById = asyncWrapper(async (req, res) => {
-    const { id : taskId} = req.params;
-    const {userId} = req.user
-    const task = await Task.findOne({_id : taskId, createdBy : userId});
-    if (!task) {
-        return res.status(404).json({ message: "Task not found" });
-    }
+    const task = await taskService.getTaskById(req.params.id, req.user.userId);
     res.status(200).json(task);
 });
 
 const updateTask = asyncWrapper(async (req, res) => {
-    const {id : taskId} = req.params
-    const {userId} = req.user
-    const updatedTask = await Task.findOneAndUpdate({_id : taskId, createdBy : userId}, req.body, {
-        new: true,
-        runValidators: true
-    });
-    if (!updatedTask) {
-        return res.status(404).json({ message: "Task not found" });
-    }
+    const updatedTask = await taskService.updateTask(req.params.id, req.user.userId, req.body);
     res.status(200).json(updatedTask);
 });
 
 const deleteTask = asyncWrapper(async (req, res) => {
-    const {id : taskId} = req.params
-    const {userId} = req.user
-    const deleted = await Task.findOneAndDelete({
-        _id : taskId,
-        createdBy : userId
-    });
-    if (!deleted) {
-        return res.status(404).json({ message: "Task not found" });
-    }
+    await taskService.deleteTask(req.params.id, req.user.userId);
     res.status(200).json({ message: "Task deleted" });
 });
 
-module.exports = { showTasks, createTask, getTaskById, updateTask, deleteTask };
+const breakdownTaskAi = asyncWrapper(async (req, res) => {
+    const { taskName } = req.body;
+    if (!taskName) {
+        return res.status(400).json({ message: "Task name is required for AI breakdown" });
+    }
+
+    const subTasks = await aiService.breakdownTask(taskName);
+    
+    // Create all sub-tasks in the DB
+    await taskService.createTasksBatch(subTasks, req.user.userId);
+    
+    res.status(201).json({ message: "AI Breakdown complete", subTasks });
+});
+
+const getAnalytics = asyncWrapper(async (req, res) => {
+    const analyticsData = await taskService.getTaskAnalytics(req.user.userId);
+    res.status(200).json(analyticsData);
+});
+
+module.exports = { showTasks, createTask, getTaskById, updateTask, deleteTask, breakdownTaskAi, getAnalytics };

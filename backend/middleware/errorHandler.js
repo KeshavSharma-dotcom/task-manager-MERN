@@ -1,4 +1,5 @@
-const handleError = (err,req,res,next) =>{
-    res.status(500).json({message: err.message})
-}
-module.exports = handleError
+const handleError = (err, req, res, next) => {
+    const statusCode = err.statusCode || 500;
+    res.status(statusCode).json({ message: err.message });
+};
+module.exports = handleError;

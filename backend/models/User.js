@@ -20,7 +20,18 @@ const User = mongoose.Schema({
         type: Boolean,
         default : false
     },
-    otp : String
+    otp : String,
+    points: {
+        type: Number,
+        default: 0
+    },
+    currentStreak: {
+        type: Number,
+        default: 0
+    },
+    lastActiveDate: {
+        type: Date
+    }
 })
 
 User.pre('save',async function(){
